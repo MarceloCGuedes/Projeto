@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Edu - Sistema de Gestão Escolar</title>
+    <style>
+        body {
+            font-family: "kdham themor pro", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+            color: #333;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 80px;
+            color: #040f6e;
+            font-weight: bold;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .buttons-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            justify-items: center;
+        }
+
+        .button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 200px;
+            height: 100px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .button img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .green { background-color: #051eff; }
+        .blue { background-color: #051eff; }
+        .purple { background-color: #051eff; }
+        .orange { background-color: #051eff; }
+        .red { background-color: #051eff; }
+        .yellow { background-color: #051eff}
+        .brown { background-color: #051eff; }
+        .gray { background-color: #051eff; }
+        .pink { background-color: #051eff; }
+        .teal { background-color: #051eff; }
+
+        footer {
+            background-color: #040f6e;
+            color: white;
+            padding: 15px;
+            margin-top: 30px;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 40px;
+            }
+
+            .buttons-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .button {
+                width: 150px;
+                height: 80px;
+                font-size: 14px;
+            }
+
+            .button img {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Nexus Edu</h1>
+        </header>
+
+        <!-- Buttons Section -->
+        <div class="buttons-container">
+            <div class="button green" onclick="location.href='Aluno.html'">
+                <img src="./img/cadastrar-aluno.png" alt="Cadastrar Aluno">
+                <span>Cadastrar Aluno</span>
+            </div>
+
+            <div class="button purple" onclick="location.href='Disciplina.html'">
+                <img src="./img/cadastrar-disciplina.png" alt="Cadastrar Disciplina">
+                <span>Disciplinas</span>
+            </div>
+
+            <div class="button brown" onclick="location.href='Avaliacao.html'">
+                <img src="./img/metodo-avaliacao.png" alt="Métodos de Avaliação">
+                <span>Métodos de Avaliação</span>
+            </div>
+
+            <div class="button blue" onclick="location.href='Diario.html'">
+                <img src="./img/diario-aluno.png" alt="Diário do Aluno">
+                <span>Diário do Aluno</span>
+            </div>
+
+            <div class="button orange" onclick="location.href='Tarefa.html'">
+                <img src="./img/cadastrar-tarefas.png" alt="Cadastrar Tarefas">
+                <span>Cadastrar Tarefas</span>
+            </div>
+
+            <div class="button red" onclick="location.href='Notas.html'">
+                <img src="./img/notas-provas.png" alt="Notas Provas/Tarefas">
+                <span>Notas Provas/Tarefas</span>
+            </div>
+
+            <div class="button gray" onclick="location.href='Grafico.html'">
+                <img src="./img/grafico.png" alt="Gráfico">
+                <span>Gráfico</span>
+            </div>
+
+            <div class="button yellow" onclick="location.href='Observacoes.html'">
+                <img src="./img/cadastrar-observacoes.png" alt="Cadastrar Observações">
+                <span>Cadastrar Observações</span>
+            </div>
+
+            <!-- Novo Botão: Chamada -->
+            <div class="button pink" onclick="location.href='Chamada.html'">
+                <img src="./img/chamada.png" alt="Lista de Chamada">
+                <span>Chamada</span>
+            </div>
+
+            <!-- Novo Botão: Questionário -->
+            <div class="button teal" onclick="location.href='Conferencia.html'">
+                <img src="./img/questionario.png" alt="Análise do Aluno">
+                <span>Análise do Aluno</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Sistema de Gestão Escolar - Seu aliado na educação</p>
+        <p>&copy; 2024 Nexus Edu. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>

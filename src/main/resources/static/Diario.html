@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim e Diário do Aluno</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e3f2fd;
+        }
+        .header {
+            background-color: #051eff; /* Faixa superior em vermelho */
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-primary {
+            background-color: #0275d8;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #025aa5;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .table-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 20px;
+            overflow-x: auto; /* Scroll horizontal para tabelas em telas pequenas */
+        }
+        .table th, .table td {
+            text-align: center;
+        }
+        .table td.red {
+            color: red;
+        }
+        .observacoes-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        @media (max-width: 576px) {
+            .header h1 {
+                font-size: 18px; /* Ajusta o tamanho do título para telas pequenas */
+            }
+            .btn-primary {
+                font-size: 14px;
+                padding: 5px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Boletim e Diário do Aluno</h1>
+        <button class="btn btn-primary" onclick="window.location.href='EduEasy.html';">Voltar</button>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="col-12 col-sm-6 mb-3">
+                <label for="aluno" class="form-label">Selecione o Aluno</label>
+                <select id="aluno" class="form-select" onchange="atualizarDados()">
+                    <!-- Opções adicionadas dinamicamente -->
+                </select>
+            </div>
+            <div class="col-12 col-sm-6 d-flex align-items-end justify-content-end">
+                <button class="btn btn-primary me-2" onclick="alunoAnterior()">Anterior</button>
+                <button class="btn btn-primary" onclick="proximoAluno()">Próximo</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>1º B</th>
+                        <th>2º B</th>
+                        <th>3º B</th>
+                        <th>4º B</th>
+                    </tr>
+                </thead>
+                <tbody id="boletim">
+                    <!-- Notas dinâmicas serão inseridas aqui -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="observacoes-container">
+            <h5>Anotações</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Data</th>
+                        <th>Título</th>
+                    </tr>
+                </thead>
+                <tbody id="observacoes">
+                    <!-- Observações dinâmicas serão inseridas aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const alunos = [
+            "Albert Einstein", "Marie Curie", "Isaac Newton", "Leonardo Da Vinci",
+            "Charles Darwin", "Nikola Tesla", "Ada Lovelace", "Galileo Galilei",
+            "Alan Turing", "Rosa Parks"
+        ];
+
+        const disciplinas = ["Arte", "Ciências", "Geografia", "História", "Língua Portuguesa", "Matemática"];
+        const notas = {};
+        const observacoes = {};
+        let alunoAtual = 0;
+
+        // Gerar dados para os alunos
+        alunos.forEach(aluno => {
+            notas[aluno] = disciplinas.map(disciplina => ({
+                disciplina,
+                bimestre1: (Math.random() * 10).toFixed(1),
+                bimestre2: (Math.random() * 10).toFixed(1),
+                bimestre3: (Math.random() * 10).toFixed(1),
+                bimestre4: (Math.random() * 10).toFixed(1)
+            }));
+
+            observacoes[aluno] = [
+                { id: 1, data: "01/09/2024", titulo: `Observação 1 para ${aluno}` },
+                { id: 2, data: "10/09/2024", titulo: `Observação 2 para ${aluno}` },
+                { id: 3, data: "20/09/2024", titulo: `Observação 3 para ${aluno}` }
+            ];
+        });
+
+        // Atualizar a tabela de boletim
+        function atualizarBoletim() {
+            const aluno = alunos[alunoAtual];
+            const boletim = document.getElementById("boletim");
+            boletim.innerHTML = "";
+
+            notas[aluno].forEach(nota => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${nota.disciplina}</td>
+                    <td class="${nota.bimestre1 < 6 ? 'red' : ''}">${nota.bimestre1}</td>
+                    <td class="${nota.bimestre2 < 6 ? 'red' : ''}">${nota.bimestre2}</td>
+                    <td class="${nota.bimestre3 < 6 ? 'red' : ''}">${nota.bimestre3}</td>
+                    <td class="${nota.bimestre4 < 6 ? 'red' : ''}">${nota.bimestre4}</td>
+                `;
+                boletim.appendChild(row);
+            });
+        }
+
+        // Atualizar a tabela de observações
+        function atualizarObservacoes() {
+            const aluno = alunos[alunoAtual];
+            const observacoesTable = document.getElementById("observacoes");
+            observacoesTable.innerHTML = "";
+
+            observacoes[aluno].forEach(obs => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${obs.id}</td>
+                    <td>${obs.data}</td>
+                    <td>${obs.titulo}</td>
+                `;
+                observacoesTable.appendChild(row);
+            });
+        }
+
+        // Atualizar os dados do aluno atual
+        function atualizarDados() {
+            const alunoSelect = document.getElementById("aluno");
+            alunoAtual = alunoSelect.selectedIndex;
+            atualizarBoletim();
+            atualizarObservacoes();
+        }
+
+        // Ir para o próximo aluno
+        function proximoAluno() {
+            alunoAtual = (alunoAtual + 1) % alunos.length;
+            document.getElementById("aluno").selectedIndex = alunoAtual;
+            atualizarDados();
+        }
+
+        // Ir para o aluno anterior
+        function alunoAnterior() {
+            alunoAtual = (alunoAtual - 1 + alunos.length) % alunos.length;
+            document.getElementById("aluno").selectedIndex = alunoAtual;
+            atualizarDados();
+        }
+
+        // Inicializar o sistema
+        document.addEventListener("DOMContentLoaded", () => {
+            const alunoSelect = document.getElementById("aluno");
+            alunos.forEach(aluno => {
+                const option = document.createElement("option");
+                option.value = aluno;
+                option.textContent = aluno;
+                alunoSelect.appendChild(option);
+            });
+            atualizarDados();
+        });
+    </script>
+</body>
+</html>

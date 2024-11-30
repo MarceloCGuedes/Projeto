@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Questionário</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .btn-voltar {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-voltar:hover {
+            background-color: #a71d2a;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chart-container .col-md-6 {
+            margin-bottom: 20px;
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <header class="bg-danger text-white p-3 d-flex justify-content-between align-items-center">
+        <h1 class="h4 mb-0">Análise de Questionário</h1>
+        <button class="btn btn-voltar" onclick="location.href='EduEasy.html'">Voltar</button>
+    </header>
+
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Escolha o tipo de análise:</h2>
+        <div class="d-flex justify-content-center mb-4">
+            <button type="button" class="btn btn-primary me-2" onclick="analisarIndividual()">Análise Individual</button>
+            <button type="button" class="btn btn-secondary me-2" onclick="analisarPorTurma()">Análise por Turma</button>
+            <button type="button" class="btn btn-info" onclick="dadosUnivag()">Dados Univag</button>
+        </div>
+
+        <div id="resultado" class="text-center mb-4"></div>
+        <div class="row chart-container">
+            <div class="col-md-6" id="analise"></div>
+            <div class="col-md-6">
+                <canvas id="chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const respostasCorretas = {
+            q1: "a",
+            q2: "b",
+            q3: "b",
+            q4: "b",
+            q5: "b",
+            q6: "b",
+            q7: "b",
+            q8: "a",
+            q9: "a",
+            q10: "b"
+        };
+
+        const turmaRespostas = [
+            { nome: "João", respostas: { q1: "a", q2: "b", q3: "c", q4: "b", q5: "b", q6: "b", q7: "b", q8: "a", q9: "a", q10: "b" } },
+            { nome: "Maria", respostas: { q1: "a", q2: "c", q3: "b", q4: "a", q5: "b", q6: "b", q7: "b", q8: "a", q9: "a", q10: "d" } },
+            { nome: "Carlos", respostas: { q1: "a", q2: "b", q3: "b", q4: "b", q5: "a", q6: "b", q7: "b", q8: "c", q9: "d", q10: "b" } }
+        ];
+
+        let chart;
+
+        function renderChart(labels, data, type, title) {
+            const ctx = document.getElementById("chart").getContext("2d");
+            if (chart) {
+                chart.destroy();
+            }
+            chart = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: title,
+                        data: data,
+                        backgroundColor: [
+                            "#007bff", "#dc3545", "#ffc107", "#28a745", "#17a2b8"
+                        ],
+                        borderColor: "#fff",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: "top"
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function analisarIndividual() {
+            const aluno = turmaRespostas[0];
+            const respostasUsuario = aluno.respostas;
+
+            let acertos = 0;
+            let dificuldades = [];
+            let analise = `<strong>Análise Individual - ${aluno.nome}:</strong><br><br>`;
+
+            for (const [pergunta, respostaCorreta] of Object.entries(respostasCorretas)) {
+                const respostaUsuario = respostasUsuario[pergunta];
+                if (respostaUsuario === respostaCorreta) {
+                    acertos++;
+                } else {
+                    dificuldades.push(`- Pergunta ${pergunta.replace("q", "")}: Resposta incorreta. A correta é "${respostaCorreta}".`);
+                }
+            }
+
+            analise += `Acertos: ${acertos}/10<br>`;
+            if (dificuldades.length > 0) {
+                analise += `<br><strong>Áreas de dificuldade:</strong><br>${dificuldades.join("<br>")}`;
+                analise += `
+                    <br><br><strong>Recomendações:</strong><br>
+                    - Reforçar estudos sobre hardware.<br>
+                    - Resolver questões relacionadas.<br>
+                    - Assistir a vídeos sobre memória e processamento.<br>
+                `;
+            } else {
+                analise += "<br>Parabéns! O aluno demonstrou ótimo domínio dos conteúdos.";
+            }
+
+            document.getElementById("resultado").innerHTML = `Análise Individual de ${aluno.nome}`;
+            document.getElementById("analise").innerHTML = analise;
+
+            renderChart(
+                ["Acertos", "Erros"],
+                [acertos, 10 - acertos],
+                "pie",
+                "Desempenho Individual"
+            );
+        }
+
+        function analisarPorTurma() {
+            let desempenhoGeral = [];
+            let totalAcertos = 0;
+
+            turmaRespostas.forEach(aluno => {
+                let acertos = 0;
+                for (const [pergunta, respostaCorreta] of Object.entries(respostasCorretas)) {
+                    if (aluno.respostas[pergunta] === respostaCorreta) {
+                        acertos++;
+                    }
+                }
+                totalAcertos += acertos;
+                desempenhoGeral.push({ nome: aluno.nome, acertos });
+            });
+
+            const media = (totalAcertos / turmaRespostas.length).toFixed(2);
+
+            let analise = `<strong>Análise por Turma:</strong><br><br>`;
+            analise += `Desempenho por aluno:<br>${desempenhoGeral.map(d => `- ${d.nome}: ${d.acertos}/10`).join("<br>")}`;
+            analise += `<br><br>Média de acertos da turma: ${media}/10`;
+            analise += `
+                <br><br><strong>Recomendações:</strong><br>
+                - Aulas de reforço.<br>
+                - Discussões em grupo.<br>
+                - Aplicar mais exercícios práticos.<br>
+            `;
+
+            document.getElementById("resultado").innerHTML = "Análise por Turma";
+            document.getElementById("analise").innerHTML = analise;
+
+            renderChart(
+                desempenhoGeral.map(d => d.nome),
+                desempenhoGeral.map(d => d.acertos),
+                "bar",
+                "Desempenho por Aluno"
+            );
+        }
+
+        function dadosUnivag() {
+            const analise = `
+                <strong>Análise - Univag:</strong><br><br>
+                A Univag é uma instituição de ensino superior reconhecida por sua excelência acadêmica e ampla oferta de cursos. 
+                Dados mostram um desempenho médio de 75% de aproveitamento, com destaque para Engenharia de Computação e Sistemas de Informação.<br>
+                <br><strong>Recomendações:</strong><br>
+                - Projetos interdisciplinares.<br>
+                - Investir em laboratórios modernos.<br>
+                - Oferecer mentorias com profissionais do mercado.<br>
+            `;
+
+            document.getElementById("resultado").innerHTML = "Dados Univag";
+            document.getElementById("analise").innerHTML = analise;
+
+            renderChart(
+                ["Engenharia", "Sistemas de Informação", "Administração"],
+                [40, 35, 25],
+                "pie",
+                "Distribuição por Curso"
+            );
+        }
+    </script>
+</body>
+</html>

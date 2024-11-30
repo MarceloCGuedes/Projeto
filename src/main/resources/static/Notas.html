@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota/Tarefas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f8fb;
+        }
+        .header {
+            background-color: #051eff;
+            color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .btn-back {
+            background-color: #ff3b3f;
+            color: white;
+            border: none;
+        }
+        .btn-back:hover {
+            background-color: #e63a3e;
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        tbody tr.green-row td {
+            background-color: #d4edda !important; /* Verde para "Muito Bom" */
+        }
+        tbody tr.orange-row td {
+            background-color: #ffe5b5 !important; /* Laranja para "Bom" */
+        }
+        tbody tr.red-dark-row td {
+            background-color: #f5c6cb !important; /* Vermelho escuro para "Ruim" */
+        }
+        tbody tr.red-light-row td {
+            background-color: #f8d7da !important; /* Vermelho claro para "Insuficiente" */
+        }
+        /* Reduzindo a altura das linhas da tabela */
+        .table tbody tr {
+            height: 30px !important; /* Altura das linhas reduzida */
+        }
+        .table td, .table th {
+            padding: 5px !important; /* Reduzindo o espaçamento interno */
+        }
+        @media (max-width: 576px) {
+            .header h1 {
+                font-size: 18px;
+            }
+            .btn {
+                font-size: 14px;
+                padding: 5px 10px;
+            }
+            .table-container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Nota/Tarefas</h1>
+        <button class="btn btn-back" onclick="window.location.href='EduEasy.html';">Voltar</button>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="col-12 col-md-6 mb-3">
+                <label for="bimestre" class="form-label">Bimestre</label>
+                <select id="bimestre" class="form-select" onchange="atualizarDados()">
+                    <option value="1º Bimestre">1º Bimestre</option>
+                    <option value="2º Bimestre" selected>2º Bimestre</option>
+                    <option value="3º Bimestre">3º Bimestre</option>
+                    <option value="4º Bimestre">4º Bimestre</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-6">
+                <label for="tarefa" class="form-label">Tarefa</label>
+                <select id="tarefa" class="form-select" onchange="atualizarDados()">
+                    <option value="Português">Português</option>
+                    <option value="Inglês">Inglês</option>
+                    <option value="Arte">Arte</option>
+                    <option value="Matemática">Matemática</option>
+                    <option value="História" selected>História</option>
+                    <option value="Geografia">Geografia</option>
+                    <option value="Ciências">Ciências</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Situação</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaAlunos">
+                    <!-- Dados dinâmicos serão inseridos aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const nomes = [
+            "Albert Einstein", "Marie Curie", "Isaac Newton", "Leonardo Da Vinci",
+            "Charles Darwin", "Nikola Tesla", "Ada Lovelace", "Galileo Galilei",
+            "Alan Turing", "Rosa Parks"
+        ];
+
+        const dados = {};
+        const bimestres = ["1º Bimestre", "2º Bimestre", "3º Bimestre", "4º Bimestre"];
+        const disciplinas = ["Português", "Inglês", "Arte", "Matemática", "História", "Geografia", "Ciências"];
+
+        bimestres.forEach(bimestre => {
+            dados[bimestre] = {};
+            disciplinas.forEach(disciplina => {
+                dados[bimestre][disciplina] = nomes.map((nome, index) => ({
+                    id: index + 1,
+                    nome,
+                    nota: (Math.random() * 10).toFixed(1)
+                }));
+            });
+        });
+
+        let alunos = [];
+
+        function atualizarDados() {
+            const bimestre = document.getElementById("bimestre").value;
+            const tarefa = document.getElementById("tarefa").value;
+
+            alunos = dados[bimestre][tarefa];
+            renderTabela();
+        }
+
+        function renderTabela() {
+            const tabela = document.getElementById("tabelaAlunos");
+            tabela.innerHTML = "";
+
+            alunos.forEach((aluno, index) => {
+                let situacao, classe;
+
+                if (aluno.nota <= 4) {
+                    situacao = "Ruim";
+                    classe = "red-dark-row";
+                } else if (aluno.nota <= 5.99) {
+                    situacao = "Insuficiente";
+                    classe = "red-light-row";
+                } else if (aluno.nota <= 8) {
+                    situacao = "Bom";
+                    classe = "orange-row";
+                } else {
+                    situacao = "Muito Bom";
+                    classe = "green-row";
+                }
+
+                const row = document.createElement("tr");
+                row.classList.add(classe);
+
+                row.innerHTML = `
+                    <td>${aluno.id}</td>
+                    <td>${aluno.nome}</td>
+                    <td>${situacao}</td>
+                    <td contenteditable="true" onblur="editarNota(${index}, this)">${aluno.nota}</td>
+                `;
+
+                tabela.appendChild(row);
+            });
+        }
+
+        function editarNota(index, cell) {
+            const novaNota = parseFloat(cell.textContent);
+
+            if (!isNaN(novaNota) && novaNota >= 0 && novaNota <= 10) {
+                alunos[index].nota = novaNota.toFixed(1);
+                renderTabela();
+            } else {
+                alert("Digite uma nota válida entre 0 e 10.");
+                renderTabela();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            atualizarDados();
+        });
+    </script>
+</body>
+</html>

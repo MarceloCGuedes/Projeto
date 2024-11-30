@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Disciplinas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .top-bar {
+            background-color: #051eff;
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .container {
+            background-color: #EAF4FC;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .form-label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .form-label.required::after {
+            content: " *";
+            color: red;
+        }
+        .form-control, .form-select {
+            border-radius: 5px;
+        }
+
+        .btn {
+            padding: 10px 10px; /* Espaçamento interno */
+            font-size: 1rem;    /* Tamanho da fonte */
+            width: 120px;       /* Largura uniforme */
+            text-align: center; /* Centraliza o texto */
+        }
+
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            padding: 10px 10px;
+            font-size: 1rem;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            padding: 10px 10px;
+            font-size: 1rem;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+        #listaNomes {
+            position: absolute;
+            z-index: 1000;
+            background-color: white;
+            width: 100%;
+            border: 1px solid #ccc;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        #listaSugestoes {
+            position: absolute; /* Garante que a lista fique abaixo do campo de texto */
+            z-index: 1000; /* Coloca a lista acima de outros elementos */
+            width: auto; /* Define a largura automaticamente de acordo com o conteúdo */
+            max-width: 100%; /* Garante que a largura máxima seja o tamanho do contêiner */
+            min-width: 200px; /* Define uma largura mínima */
+            max-height: 200px; /* Limita a altura para evitar que a lista ocupe a tela toda */
+            overflow-y: auto; /* Adiciona barra de rolagem para listas longas */
+            background-color: white; /* Garante que o fundo seja branco */
+            border: 1px solid #ddd; /* Adiciona uma borda sutil */
+            border-radius: 4px; /* Suaviza os cantos */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adiciona um leve sombreamento */
+            padding: 5px; /* Adiciona espaçamento interno */
+        }
+        .list-group-item {
+            padding: 10px; /* Adiciona espaçamento interno para os itens */
+            white-space: nowrap; /* Evita que o texto quebre em várias linhas */
+            overflow: hidden; /* Esconde texto extra que não cabe no contêiner */
+            text-overflow: ellipsis; /* Adiciona "..." ao texto longo */
+        }
+        .list-group-item:hover {
+            background-color: #f1f1f1; /* Realça o item ao passar o mouse */
+            cursor: pointer; /* Adiciona o ponteiro para indicar clicabilidade */
+        }
+
+        @media (max-width: 768px) {
+    .d-grid .btn {
+        width: 100%; /* Faz os botões ocuparem toda a largura */
+        margin-bottom: 10px; /* Adiciona espaço entre os botões */
+    }
+
+    .d-md-flex {
+        flex-direction: column; /* Empilha os botões em telas pequenas */
+    }
+
+    .btn {
+        font-size: 0.9rem; /* Ajusta o tamanho da fonte para telas menores */
+        padding: 10px; /* Ajusta o espaçamento interno */
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <h2 class="m-0">Cadastro de Disciplinas</h2>
+        <button class="btn btn-light" onclick="location.href='EduEasy.html'">Voltar</button>
+    </div>
+
+    <div class="container">
+        <!-- Filtro por Nome -->
+        <div class="mb-3">
+            <label for="filtroNome" class="form-label">Buscar por Nome</label>
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="filtroNome" 
+                    class="form-control" 
+                    placeholder="Digite o nome do disciplina" 
+                    oninput="filtrarNomes()">
+            </div>
+            <div id="listaSugestoes" class="list-group mt-2" style="display: none;"></div>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <form id="disciplinaForm" class="row g-3">
+            <input type="hidden" id="disciplinaId">
+
+            <!-- Nome -->
+            <div class="col-md-6">
+                <label for="nome" class="form-label required">Nome</label>
+                <input type="text" id="nome" class="form-control" placeholder="Digite o nome do disciplina" required maxlength="150"  oninput="capitalizeWordsIgnoringAccents(this)">
+            </div>
+
+            <!-- Turma -->
+            <div class="col-md-6">
+                <label for="turma" class="form-label required">Turma</label>
+                <input type="text" id="turma" class="form-control" placeholder="Carregando turma..." readonly required>
+            </div>
+            
+            <!-- Botões -->
+            <div class="col-md-12">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="button" id="btnExcluir" class="btn btn-danger" onclick="excluirDisciplina()">Excluir</button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </div>
+
+            <div class="container mt-4">
+                <h4>Disciplinas Cadastradas na Turma</h4>
+                <div id="listaDisciplinas" class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                            </tr>
+                        </thead>
+                        <tbody id="disciplinasCadastradas">
+                            <!-- As disciplinas serão carregadas dinamicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    
+    <script src="Disciplina.js"></script>
+</body>
+</html>
